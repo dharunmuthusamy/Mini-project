@@ -1,1 +1,114 @@
-    hi!
+***Query to Create blood_bank database***
+    CREATE DATABASE blood_bank;
+
+***Query to Create donars table***
+
+CREATE TABLE donars (
+    id INT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    age INT NOT NULL,
+    weight INT NOT NULL,
+    blood_type VARCHAR(3) NOT NULL,
+    health ENUM('YES', 'NO') NOT NULL,
+    medical_history ENUM('YES', 'NO') NOT NULL,
+    transfusion ENUM('YES', 'NO') NOT NULL,
+    medications ENUM('YES', 'NO') NOT NULL,
+    travel ENUM('YES', 'NO') NOT NULL,
+    risk_behavior ENUM('YES', 'NO') NOT NULL,
+    pregnancy ENUM('YES', 'NO') NOT NULL,
+    phone_number VARCHAR(15) UNIQUE NOT NULL
+);
+***Query to Create blood_type_counts table***
+
+CREATE TABLE blood_type_counts (
+    blood_type VARCHAR(3) PRIMARY KEY,
+    donor_count INT NOT NULL
+);
+
+***Query to Create bookings table***
+
+CREATE TABLE bookings (
+    booking_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    booker_name VARCHAR(100) NOT NULL,
+    booker_phone VARCHAR(15) NOT NULL,
+    donar_id INT NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    blood_type VARCHAR(3) NOT NULL,
+    booking_date DATETIME NOT NULL
+);
+
+***Query to Create DeleteDonorAfterBooking trigger***
+DELIMITER $$
+CREATE TRIGGER DeleteDonorAfterBooking
+AFTER INSERT ON bookings
+FOR EACH ROW
+BEGIN
+    -- Delete the donor from the donars table after the booking is inserted
+    DELETE FROM donars WHERE id = NEW.donar_id;
+END$$
+DELIMITER ;
+
+***Query to Create UpdateBloodTypeCounts procedure***
+
+DELIMITER $$
+CREATE PROCEDURE UpdateBloodTypeCounts()
+BEGIN
+    DECLARE done INT DEFAULT FALSE;
+    DECLARE bloodType VARCHAR(10);
+    DECLARE donorCount INT;
+    -- Declare cursor to select distinct blood types from the donars table
+    DECLARE cur CURSOR FOR 
+        SELECT DISTINCT blood_type FROM donars;
+    -- Declare handler to set done to TRUE when cursor has no more rows
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+    -- Open the cursor
+    OPEN cur;
+        -- Loop through all distinct blood types in the donars table
+    read_loop: LOOP
+        -- Fetch the next blood type
+        FETCH cur INTO bloodType;
+        -- If no more rows are left to fetch, exit the loop
+        IF done THEN
+            LEAVE read_loop;
+        END IF;
+        -- Count the number of donors for the fetched blood type
+        SELECT COUNT(*) INTO donorCount 
+        FROM donars 
+        WHERE blood_type = bloodType;
+        -- Insert or update the count in the blood_type_counts table
+        INSERT INTO blood_type_counts (blood_type, donar_count)
+        VALUES (bloodType, donorCount)
+        ON DUPLICATE KEY UPDATE donar_count = donorCount;
+    END LOOP;
+    -- Close the cursor
+    CLOSE cur;
+END$$
+DELIMITER ;
+
+***Query to Create DeleteDonorAndInsertBooking procedure***
+
+DELIMITER $$
+CREATE PROCEDURE DeleteDonorAndInsertBooking(
+    IN user_id INT,
+    IN booker_name VARCHAR(100),
+    IN booker_phone VARCHAR(15),
+    IN donar_id INT,
+    IN blood_type VARCHAR(10)
+)
+BEGIN
+    DECLARE donor_name VARCHAR(100);
+    DECLARE donor_blood_type VARCHAR(10);
+    -- Fetch donor details
+    SELECT name, blood_type INTO donor_name, donor_blood_type 
+    FROM donars 
+    WHERE id = donar_id;
+    -- Check if the donor exists (for error handling)
+    IF donor_name IS NULL THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Donor not found';
+    END IF;
+    -- Insert into bookings table
+    INSERT INTO bookings (user_id, booker_name, booker_phone, donar_id, name, blood_type, booking_date)
+    VALUES (user_id, booker_name, booker_phone, donar_id, donor_name, blood_type, NOW());
+END$$
+DELIMITER ;
