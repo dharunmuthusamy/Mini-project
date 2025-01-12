@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blood Bank Management System</title>
+    <style>
+        body, h1, h2, p, ul {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+        
+        body, html {
+            height: 100%; 
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+        
+        .video-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1; 
+        }
+        
+        .video-background video {
+            min-width: 100%;
+            min-height: 100%; 
+            width: auto; 
+            height: auto; 
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            object-fit: cover;
+        }
+        
+
+    
+        header {
+            background-color: rgba(183, 28, 28, 0.8);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            position: relative; /* Ensure it stays above video */
+            z-index: 1; /* Higher than the video */
+        }
+        
+        nav ul {
+            display: flex;
+            justify-content: center;
+            margin-top: 15px;
+        }
+        
+        nav ul li {
+            margin: 0 15px;
+        }
+        
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        nav ul li a:hover {
+            color: #ffeb3b;
+        }
+        
+        main {
+            padding: 20px;
+            max-width: 800px;
+            margin: auto;
+            position: relative; /* Ensure it stays above video */
+            z-index: 1; /* Higher than the video */
+        }
+        
+        section {
+            background: rgba(255, 255, 255, 0.9);
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        h2 {
+            color: #b71c1c;
+            margin-bottom: 15px;
+        }
+        
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        label {
+            margin-bottom: 5px;
+        }
+        
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        input[type="number"],
+        select {
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            transition: border 0.3s;
+        }
+        
+        input:focus,
+        select:focus {
+            border-color: #b71c1c;
+            outline: none;
+        }
+        
+        button {
+            padding: 10px;
+            background-color: #b71c1c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        button:hover {
+            background-color: #d32f2f;
+        }
+        
+        #available-blood-types ul {
+            padding-left: 20px;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 10px;
+            background-color: rgba(183, 28, 28, 0.8);
+            color: white;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+        }
+            /* General styles for the main content */
+main {
+    padding: 20px;
+    max-width: 800px;
+    margin: auto;
+    position: relative; /* Ensure it stays above video */
+    z-index: 1; /* Higher than the video */
+}
+
+/* Box styling */
+.box {
+    background: rgba(255, 255, 255, 0.9);
+    margin: 20px 0;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.box:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+h2 {
+    color: #b71c1c; /* Heading color */
+    margin-bottom: 15px;
+}
+
+/* Optional: Style for list items */
+.box ul {
+    padding-left: 20px; /* Add some padding for list items */
+}
+/* Styles for the eligibility list */
+.eligibility-list {
+    list-style-type: none; /* Remove default list styling */
+    padding: 0; /* Remove default padding */
+}
+
+.eligibility-list li {
+    background-color:rgba(223, 161, 161, 0.9); /* Light background for contrast */
+    border: 1px solid #b71c1c; /* Border color */
+    border-radius: 5px; /* Slightly rounded corners */
+    padding: 10px; /* Padding inside each list item */
+    margin: 10px 0; /* Margin between list items */
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth transition for hover effects */
+}
+
+.eligibility-list li:hover {
+    transform: scale(1.02); /* Slightly enlarge on hover */
+    background-color: rgb(88, 192, 131);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Shadow effect on hover */
+}
+.box-mission{
+    font-size:smaller;
+}
+
+h2 {
+    color: #b71c1c; /* Heading color */
+    margin-bottom: 15px;
+    text-align: center; /* Center align the heading */
+}
+
+        
+        </style>
+</head>
+<body>
+    <div class="video-background">
+        <video autoplay muted loop>
+            <source src="bg1.mp4" type="video/mp4">
+        </video>
+    </div>
+
+    <header>
+        <h1>Blood Bank Management System</h1>
+        <nav>
+            <ul>
+                <li><a href="dded.html" >Donor Registration</a></li>
+                <li><a href="http://localhost/my project/dddw.php">Available Blood Types</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <div class="box" id="mission">
+            <h2>Our Mission</h2>
+            <p>To provide safe and blood supply to those in need.Understand the donation process from start to finish</p>
+        </div>
+        <div class="box" id="emergency">
+            <h2>Emergency Needs</h2>
+            <p>We urgently need O+ blood. Please donate!</p>
+        </div>
+        <div class="box" id="upcoming-drives">
+            <h2>Upcoming Blood Drives</h2>
+            <ul>
+                <li>Event 1: Date, Location</li>
+                <li>Event 2: Date, Location</li>
+            </ul>
+        </div>
+        <div class="box" id="eligibility">
+            <h2>Eligibility Criteria</h2>
+            <p>Find out if you are eligible to donate blood:</p>
+            <ul class="eligibility-list">
+                <li><strong>Age:</strong> Must be at least 18 years old.</li>
+                <li><strong>Weight:</strong> Minimum weight of 50 kg.</li>
+                <li><strong>Health:</strong> Must be in good health and feeling well on the day of donation.</li>
+                <li><strong>Medical History:</strong> No history of certain chronic illnesses or infections.</li>
+                <li><strong>Transfusion:</strong> No blood transfusions in the last 12 months.</li>
+                <li><strong>Medications:</strong> Certain medications may affect eligibility; consult before donating.</li>
+                <li><strong>Travel:</strong> Recent travel to high-risk areas for infections may disqualify you.</li>
+                <li><strong>Risk Behavior:</strong> No engaging in high-risk behaviors that could affect blood safety.</li>
+                <li><strong>Pregnancy:</strong> Must not be pregnant or recently given birth (consult for specifics).</li>
+            </ul>
+        </div>
+        <div class="box" id="faq">
+            <h2>FAQs</h2>
+            <p>Find answers to common questions about blood donation.</p>
+        </div>
+      
+        <div class="box" id="contact">
+            <h2>Contact Us</h2>
+            <p>Email: bbmanagement@info.in</p>
+            <p>Phone: 9786585484</p>
+        </div>
+    
+        
+    </main>
+</body>
+</html>
